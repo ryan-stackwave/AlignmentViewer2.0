@@ -1,7 +1,7 @@
 {
   "name": "@ryan-stackwave/alignment-viewer-2",
   "homepage": "https://fast.alignmentviewer.org",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "private": false,
   "author": "Nicholas Gauthier",
   "module": "dist/js/index.js",
