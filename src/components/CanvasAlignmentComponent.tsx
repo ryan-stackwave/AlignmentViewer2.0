@@ -1,7 +1,7 @@
 import React from "react";
 import { Alignment } from "../common/Alignment";
 import { SequenceSorter } from "../common/AlignmentSorter";
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { Stage, AppContext } from "@inlet/react-pixi";
 import {
   CanvasAlignmentViewport,
