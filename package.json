@@ -35,7 +35,7 @@
     "css-element-queries": "^1.2.3",
     "lodash": "^4.17.15",
     "pixi-viewport": "4.11.x",
-    "pixi.js": "5.2.x",
+    "pixi.js-legacy": "5.2.x",
     "react": "^16.14.0",
     "react-dom": "^16.14.0",
     "react-tooltip": "^4.2.5"

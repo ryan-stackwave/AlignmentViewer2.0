@@ -1,6 +1,6 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "pixi.js-legacy";
 import { PixiComponent } from "@inlet/react-pixi";
-import { Graphics } from "pixi.js";
+import { Graphics } from "pixi.js-legacy";
 
 interface IAlignmentHighlighterProps {
   x: number;
