@@ -1,5 +1,6 @@
 import { Alignment, ISequence } from "./Alignment";
 import { getParseError } from "./Utils";
+import { parseSequenceAnnotations } from './Annotations'
 
 /**
  * FastaAlignment
@@ -13,7 +14,8 @@ export class FastaAlignment extends Alignment {
    */
   static fromFileContents(
     fileName: string,
-    fileContents: string
+    fileContents: string,
+    removeDuplicateSequences?: boolean
   ): FastaAlignment {
     const trimmedFile = fileContents.trim();
     if (trimmedFile.length < 1 || trimmedFile[0] !== ">") {
@@ -25,17 +27,24 @@ export class FastaAlignment extends Alignment {
     for (var i = 0; i < fastaSplitCaret.length; i++) {
       const seqArr = fastaSplitCaret[i].split(/\r?\n/);
       if (seqArr.length > 1) {
-        var seqObj = {
-          id: seqArr[0],
-          sequence: seqArr.slice(1).join(""),
-        };
-        sequences.push(seqObj);
+        const idDesc = seqArr[0].match(/^\s*(?<id>\S+)(?:\s+(?<description>.+\S+)\s*)?$/)?.groups;
+        const sequence = seqArr.slice(1).join("");
+        if (idDesc) {
+          sequences.push({
+            sequence,
+            annotations: parseSequenceAnnotations(idDesc.id, sequence, idDesc.description),
+          });
+        }
       }
     }
     try {
-      return new FastaAlignment(fileName, sequences);
+      return new FastaAlignment({
+        name: fileName, 
+        sequencesAsInput: sequences, 
+        removeDuplicateSequences: removeDuplicateSequences
+      });
     } catch (e) {
-      throw getParseError("Fasta", e.message);
+      throw getParseError("Fasta", (e as Error).message);
     }
   }
 }
