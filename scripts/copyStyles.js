@@ -7,7 +7,7 @@ const srcDir = path.join("./src");
 const jsDir = path.join("./dist/js");
 const esmDir = path.join("./dist/esm");
 const umdDir = path.join("./dist/umd");
-const files = glob.sync("**/*.scss", {
+const files = glob.sync("./**/*.scss", {
   cwd: srcDir,
 });
 files.forEach((file) => {
