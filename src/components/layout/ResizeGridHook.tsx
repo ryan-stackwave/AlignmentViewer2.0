@@ -104,14 +104,14 @@ export function useResizeGrid(props: IResizeGridProps) {
           className={classes.join(" ")+resizingClass+hoveredClass}
           style={{gridArea: gridArea, zIndex: zIndex}}
           onMouseDown={(e)=>{
-            clearTimeout(resizeTimeout.current);
+            clearTimeout(resizeTimeout.current as any);
             resizeTimeout.current = setTimeout(()=>{
               setKeyBeingResized(keys[idx]);
               startResizeDragging(e);
             }, 150)
           }}
           onMouseUp={()=>{
-            clearTimeout(resizeTimeout.current);
+            clearTimeout(resizeTimeout.current as any);
           }}
           onMouseOver={()=>{
             setKeyBeingHovered(keys[idx]);
@@ -120,7 +120,7 @@ export function useResizeGrid(props: IResizeGridProps) {
             setKeyBeingHovered(undefined);
           }}
           onDoubleClick={!resizerDoubleClicked ? undefined : ()=>{
-            clearTimeout(resizeTimeout.current);
+            clearTimeout(resizeTimeout.current as any);
             resizerDoubleClicked(keys[idx]);
           }}
         />

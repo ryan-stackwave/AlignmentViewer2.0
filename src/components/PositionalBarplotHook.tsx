@@ -366,7 +366,7 @@ export function PositionalBarplot(props: IPositionalBarplotProps){
   // tooltip itself is hovered .. keep it open
   //
   const tooltipHovered = useCallback(()=>{
-    clearTimeout(tooltipClosingTimeoutRef.current); 
+    clearTimeout(tooltipClosingTimeoutRef.current as any); 
   }, []);
 
   //
@@ -446,7 +446,7 @@ export function PositionalBarplot(props: IPositionalBarplotProps){
   )=>{
     //stop any close timeout as an adjacent tip is now being opened 
     //and it uses the same tooltip.
-    clearTimeout(tooltipClosingTimeoutRef.current); 
+    clearTimeout(tooltipClosingTimeoutRef.current as any); 
 
     const id = (e.target as SVGRectElement).getAttribute("data-tooltip-id")!;
     const posIdx = (e.target as SVGRectElement).getAttribute("data-tooltip-content")!;

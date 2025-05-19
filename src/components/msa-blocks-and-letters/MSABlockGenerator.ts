@@ -60,6 +60,7 @@ export interface IExposedCanvasFunctions extends IExposedBlockGeneratorFunctions
 //
 const createWebGlContext = () => {
   const app = new PIXI.Application<HTMLCanvasElement>({
+    //@ts-ignore
     antialias: true,
     resolution: window.devicePixelRatio,
     autoDensity: true,
