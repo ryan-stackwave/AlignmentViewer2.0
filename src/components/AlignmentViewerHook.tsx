@@ -8,7 +8,7 @@ import {
 } from "./SequenceLogoHook";
 
 import { MiniMap } from "./minimap/MiniMapHook";
-import { Alignment } from "../common/Alignment";
+import { Alignment, ISequence } from "../common/Alignment";
 import { DEFAULT_ANNOTATION_FIELDS } from "../common/Annotations";
 import { SequenceSorter, SequenceSorterInstance } from "../common/AlignmentSorter";
 import { reduxStore } from "../redux/ReduxStore";
@@ -67,6 +67,11 @@ export type IAlignmentViewerProps = {
     posIdxStart: number,
     posIdxEnd: number
   }) => void;
+  sequenceExclusionOptions?: {
+    excludedSequenceIds?: string[];
+    sequenceExcluded?: (props: { sequence: ISequence }) => void;
+    sequenceIncluded?: (props: { sequence: ISequence }) => void;
+  };
 } & Partial<Readonly<typeof defaultProps>>;
 
 
@@ -151,6 +156,8 @@ const defaultProps = {
       tooltipPlacement: undefined
     },
   ] as IBarplotExposedProps[],
+
+  enableSequenceExclusion: false as boolean
 };
 
 
@@ -227,6 +234,7 @@ export function AlignmentViewer(props: IAlignmentViewerProps) {
     : defaultFontSize.height;
   const singleLineHeight = residueHeight;
   
+  let sequencesMarkedToExcludeLookupTable: { [keys: string]: boolean } = props.sequenceExclusionOptions?.excludedSequenceIds?.reduce((acc, id) => ({ ...acc, [id]: true }), {}) ?? {};
   
   //
   // search - listen for key events
@@ -301,7 +309,6 @@ export function AlignmentViewer(props: IAlignmentViewerProps) {
     setMouseHoveringVerticalContent
   ] = useState<boolean>(false);
 
-
   //hover events
   const handleMouseHoveringHoriz = useCallback(()=>{
     setMouseHoveringHorizontalContent(true); 
@@ -332,7 +339,6 @@ export function AlignmentViewer(props: IAlignmentViewerProps) {
     )
     .map((iseq) => iseq.annotations)
   }, [alignment, sortBy]);
-  
 
   //
   // renders
@@ -576,7 +582,32 @@ export function AlignmentViewer(props: IAlignmentViewerProps) {
         initialColumnName: annotationFields[key].name,
         initiallyPinned: (key === DEFAULT_ANNOTATION_FIELDS.ID),
         rawData: Array(alignment.getSequenceCount()).fill(0).map((val, idx)=>{
-          return sequences[idx].annotations[key] ?? "";
+          const text = sequences[idx].annotations[key];
+          if (text) {
+            return props.enableSequenceExclusion && key === DEFAULT_ANNOTATION_FIELDS.ID ? <React.Fragment><a onClick={e => {
+              const isExcluded = sequencesMarkedToExcludeLookupTable[text] === true;
+              const textWrapperElement = e.currentTarget.parentElement?.getElementsByClassName("sequence-id-text-wrapper")[0];
+              const glyphiconElement = e.currentTarget.parentElement?.getElementsByClassName("glyphicon")[0];
+              if (isExcluded) {
+                sequencesMarkedToExcludeLookupTable[text] = false;
+                textWrapperElement?.classList.remove("excluded-sequence-id");
+                glyphiconElement?.classList.remove("glyphicon-ok");
+                glyphiconElement?.classList.add("glyphicon-remove");
+                if (props.sequenceExclusionOptions?.sequenceIncluded) {
+                  props.sequenceExclusionOptions.sequenceIncluded({ sequence: sequences[idx] });
+                }
+              }
+              else {
+                sequencesMarkedToExcludeLookupTable[text] = true;
+                textWrapperElement?.classList.add("excluded-sequence-id");
+                glyphiconElement?.classList.remove("glyphicon-remove");
+                glyphiconElement?.classList.add("glyphicon-ok");
+                if (props.sequenceExclusionOptions?.sequenceExcluded) {
+                  props.sequenceExclusionOptions.sequenceExcluded({ sequence: sequences[idx] });
+                }
+              }
+            }}><span className="glyphicon glyphicon-remove"></span></a> <span className="sequence-id-text-wrapper">{text}</span></React.Fragment> : text;
+          }
         }),
       };
     }
