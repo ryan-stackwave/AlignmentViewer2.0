@@ -1,12 +1,13 @@
 import * as PIXI from "pixi.js";
-import { 
+import { Observable } from "../../common/Observable";
+import {
   generateCanvases,
-  ICanvasAlignmentTiledProps, 
+  ICanvasAlignmentTiledProps,
   ITiledImages
 } from "../../webworkers/MSAGenerationWorker";
 import { WorkerFactory } from "../../webworkers/WebWorkerFactory";
-import { Observable } from "../../common/Observable";
-
+//@ts-ignore
+import generateCanvasesUrl from "../../assets/generateCanvases.js";
 
 export interface ISharedObservableCommons{
   loaded: boolean;
@@ -124,7 +125,7 @@ export function createMSABlockGenerator<
   let cachePropsKey = undefined as undefined | string;
   let jobBeingExecutedPropsKey = undefined as undefined | string;
 
-  let worker = new WorkerFactory(generateCanvases);
+  let worker = typeof generateCanvasesUrl === "string" ? new Worker(new URL(generateCanvasesUrl.replace(/^~/, "").replace("build_", "build/_"), window.location.origin)) : new WorkerFactory(generateCanvases);
   const sharedObservable = datatype === "synced-webgl" 
     ? new Observable({
         datatype: "synced-webgl",
@@ -264,7 +265,7 @@ export function createMSABlockGenerator<
     if(jobBeingExecutedPropsKey){
       //the canvas being generated has different props (uncommon I think)
       worker.terminate();
-      worker = new WorkerFactory(generateCanvases);
+      worker = typeof generateCanvasesUrl === "string" ? new Worker(new URL(generateCanvasesUrl.replace(/^~/, ""))) : new WorkerFactory(generateCanvases);
       worker.onmessage = dataUpdatedFromWebworker;
     }
     jobBeingExecutedPropsKey = propsKey;
