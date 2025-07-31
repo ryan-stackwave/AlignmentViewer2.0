@@ -265,7 +265,7 @@ export function createMSABlockGenerator<
     if(jobBeingExecutedPropsKey){
       //the canvas being generated has different props (uncommon I think)
       worker.terminate();
-      worker = typeof generateCanvasesUrl === "string" ? new Worker(new URL(generateCanvasesUrl.replace(/^~/, ""))) : new WorkerFactory(generateCanvases);
+      worker = typeof generateCanvasesUrl === "string" ? new Worker(new URL(generateCanvasesUrl.replace(/^~/, "").replace("build_", "build/_"))) : new WorkerFactory(generateCanvases);
       worker.onmessage = dataUpdatedFromWebworker;
     }
     jobBeingExecutedPropsKey = propsKey;
